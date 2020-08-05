@@ -1,9 +1,20 @@
 import requests
 
-date = "2020-07-30"
-access_key = "c99033bf278986db036c4344d9d40f4a"
-symbols = ["USD", "AUD", "CAD", "PLN", "MXN"]
-URL = f"http://data.fixer.io/api/"
-data = requests.get(URL + date, params={"symbols": ','.join(symbols), "access_key": access_key})
-data = data.json()
-print(data)
+def request():
+    url = 'https://{host}:8443/?database={db}&query={query}'.format(
+        host='rc1b-2kg8g5lblno2pln0.mdb.yandexcloud.net',
+        db='vkontakte',
+        query='SELECT now()')
+    auth = {
+        'X-ClickHouse-User': 'user-vk',
+        'X-ClickHouse-Key': 'Qqwerty123',
+    }
+
+    res = requests.get(
+        url,
+        headers=auth,
+        verify='/usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt')
+    res.raise_for_status()
+    return res.text
+
+print(request())
