@@ -54,6 +54,14 @@ $ python3 vkontakte/bin/activate
 
 $ deactivate
 
+Для запуска кода из репозитория необходимо его перенести в ВМ из Git, для этого клонируем репозиторий, команда:
+
+$ git clone https://github.com/vkontakte-hh/test-task.git
+
+Активируем виртуальное окружение и устанавливаем все необходимые для работы пакеты из файла requirements.txt:
+
+$ pip install --upgrade -r requirements.txt
+
 
 
 
