@@ -4,7 +4,7 @@ def request():
     url = 'https://{host}:8443/?database={db}&query={query}'.format(
         host='rc1b-2kg8g5lblno2pln0.mdb.yandexcloud.net',
         db='vkontakte',
-        query='SELECT * FROM vkontakte.advertisements_data'
+        query='INSERT INTO vkontakte.advertisements_performance_data VALUES(111,111,111,111,111)'
     )
     auth = {
         'X-ClickHouse-User': 'user-vk',
