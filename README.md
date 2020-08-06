@@ -62,6 +62,35 @@ $ git clone https://github.com/vkontakte-hh/test-task.git
 
 $ pip install --upgrade -r requirements.txt
 
+Устанавливаем ClickHouse на ВМ:
+
+* Указываем репозиторий, с которого будет загружен ClickHouse:
+
+$ sudo apt-add-repository "deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
+
+* Запускаем процесс установки ClickHouse:
+
+$ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4
+$ sudo apt-get update
+$ sudo apt-get install clickhouse-client clickhouse-server
+
+* Запускаем ClickHouse:
+
+$	sudo service clickhouse-server start
+
+Команда для запуска консольного клиента:
+
+$ clickhouse-client
+
+Тестовый запрос к ClickHouse:
+
+$ select 1
+
+Если все успешно, вернется 1.
+
+Если при подключении пароль не подошел, проверить его можно командой:
+
+$ sudo nano /etc/clickhouse-server/users.d/default-password.xml
 
 
 
