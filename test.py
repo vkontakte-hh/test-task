@@ -21,7 +21,7 @@ def request():
     res = requests.post(
         url,
         headers=auth,
-        params=params,
+        data=params,
         verify='/usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt')
     res.raise_for_status()
     return res.text
