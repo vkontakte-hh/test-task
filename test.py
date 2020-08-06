@@ -4,18 +4,7 @@ def request():
     url = 'https://{host}:8443/?database={db}&query={query}'.format(
         host='rc1b-2kg8g5lblno2pln0.mdb.yandexcloud.net',
         db='vkontakte',
-        query=""" 'CREATE TABLE t_pare_table
-                                (
-                                    pare_id UInt8,
-                                    Pare_one String,
-                                    Pare_two String,
-                                    Pare_three String
-                                )
-                  ENGINE = MergeTree()
-                  PARTITION BY pare_id 
-                  ORDER BY (pare_id)
-                  SETTINGS index_granularity = 8192' 
-              """
+        query="'CREATE TABLE t_pare_table(pare_id UInt8,Pare_one String,Pare_two String,Pare_three String) ENGINE = MergeTree() PARTITION BY pare_id ORDER BY (pare_id) SETTINGS index_granularity = 8192'"
     )
     auth = {
         'X-ClickHouse-User': 'user-vk',
