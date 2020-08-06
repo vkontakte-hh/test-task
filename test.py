@@ -10,8 +10,8 @@ def request():
 
     res = requests.post(
         url,
+        body,
         headers=auth,
-        body=body,
         verify='/usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt')
     res.raise_for_status()
     return res.text
