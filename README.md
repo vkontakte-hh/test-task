@@ -4,13 +4,18 @@
   - [ClickHouse install](#clickhouse_install)
   - [ClickHouse SQL-syntax](#clickhouse_sql_syntax)
     - [CREATE TABLE](#create_table)
-    - []()
+    - [INSERT](#clickhouse_insert)
+    - [SELECT](#clickhouse_select)
+    - [SELECT Partition](#clickhouse_partition)
+    - [UPDATE](#clickhouse_update)
+    - [DELETE](#clickhouse_delete)
+    
+- [Yandex.Cloud](#yandex_cloud)
+  - [Настройка Yandex Cloud Computer Engine](#yandex_cloud_virtual)
+  
+- [Выполнение SQL-запросов на Python](#sql_in_python)
 
-
-
-
-
-
+- [Получение подневной статистики кросс-курсов](#python_get_stat)
 
 
 
@@ -68,17 +73,17 @@
      SETTINGS index_granularity = 8192 
 ```
 
-#### Запись данных в таблицу:
+#### <a name="clickhouse_insert">Запись данных в таблицу:</a>
 
 Пример SQL-запроса для записи данных в таблицу: <br>
 ``` INSERT INTO db_name.table_name VALUES (12, 12, 12, 12, 12) ```
 
-#### Выборка данных из таблицы:
+#### <a name="clickhouse_select">Выборка данных из таблицы:</a>
 
 Пример SQL-запроса на выборку данных: <br>
 ``` SELECT * FROM db_name.table_name WHERE advertisementId=12 ```
 
-#### Выборка данных о партициях таблицы: <br>
+#### <a name="clickhouse_partition">Выборка данных о партициях таблицы:</a> <br>
 Пример SQL-запроса на информации о партициях:
 ``` 
     SELECT partition,
@@ -91,23 +96,23 @@
     GROUP BY partition
     ORDER BY partition;
 ```
-#### Обновление данных в таблице:
+#### <a name="clickhouse_update">Обновление данных в таблице:</a>
 
 Пример SQL-запроса на обновление данных: <br>
 ``` ALTER TABLE db_name.table_name UPDATE advertisementId=77 WHERE locationId=12; ```
 
-#### Удаление данных в таблице:
+#### <a name="clickhouse_delete">Удаление данных в таблице:</a>
 
 Пример SQL-запроса на удаление данных: <br>
 ``` ALTER TABLE db_name.table_name DELETE WHERE locationId=12; ```
 
 
-## Yandex Cloud
+## <a name="yandex_cloud">Yandex Cloud</a>
 
 1. Создаем проект в <a href="https://console.cloud.yandex.ru/" targt="_blank">Yandex.Cloud</a>
 2. Создаем виртуальную машину
 
-### Переходим к настройкам вирутального окружения
+### <a name="yandex_cloud_virtual">Переходим к настройкам вирутального окружения</a>
 
 Для работы в Windows использовался PuTTY. Генерируется приватный и публичный ключ. После настройки подключения к ВМ устанавливаем и обновляем все необходимые пакеты.
 > ``` $ sudo apt-get update ``` <br>
@@ -139,7 +144,7 @@
 Обновить код из репозитория на ВМ с помощью команды:
 > ``` $ git pull ```
 
-## Выполнения SQL-запросов к ClickHouse с помощью Python
+## <a name="sql_in_python">Выполнения SQL-запросов к ClickHouse с помощью Python</a>
 
 Выполнение запроса не связанного с изменением данных (запросы типа SELECT):
 ```
@@ -189,7 +194,7 @@ def request():
 print(request())
 ```
 
-## Получение подневной статистикой кросс-курсов и рассчет скользяще средней цены с помощью Python
+## <a name="python_get_stat">Получение подневной статистикой кросс-курсов и рассчет скользяще средней цены с помощью Python</a>
 
 ### Получение подневной статистикой кросс-курсов
 
