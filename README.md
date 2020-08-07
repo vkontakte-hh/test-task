@@ -14,6 +14,11 @@
 > ``` $ sudo apt-get update ``` <br> 
 > ``` $ sudo apt-get install clickhouse-client clickhouse-server ``` <br> 
 
+- Устанавливаем сетртификат для дальнейшей работы с ClickHouse:
+> ``` $ sudo mkdir -p ~/.clickhouse-client /usr/local/share/ca-certificates/Yandex ``` <br>
+> ``` $ sudo wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" -O /usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt ``` <br>
+> ``` $ sudo wget "https://storage.yandexcloud.net/mdb/clickhouse-client.conf.example" -O ~/.clickhouse-client/config.xml ``` <br>
+
 - Запускаем ClickHouse
 > ``` $	sudo service clickhouse-server start ```
 
@@ -21,12 +26,10 @@
 > ``` $ clickhouse-client ```
 
 - Тестовый запрос к ClickHouse
-
 > ``` $ select 1 ```
 > Если все успешно, вернется 1.
 
 Для смены пароля необходио отредактирвоать файл:
-
 > ``` $ sudo nano /etc/clickhouse-server/users.d/default-password.xml ```
 
 ### - SQL синтаксис и команды ClickHouse
@@ -117,7 +120,54 @@
 Устанавливаем зависимости:
 > ``` $ pip install --upgrade -r requirements.txt ```
 
+Обновить код из репозитория на ВМ с помощью команды:
+> ``` $ git pull ```
+
 ## Выполнения SQL-запросов к ClickHouse с помощью Python
 
+Выполнение запроса не связанного с изменением данных (запросы типа SELECT):
+```
+import requests
 
+def request():
+    url = 'https://{host}:8443/?database={db}&query={query}'.format(
+        host='host.yandexcloud.net',
+        db='db_name',
+        query='SELECT now()')
+    auth = {
+        'X-ClickHouse-User': 'user_login',
+        'X-ClickHouse-Key': 'user_password',
+    }
 
+    res = requests.get(
+        url,
+        headers=auth,
+        verify='/usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt')
+    res.raise_for_status()
+    return res.text
+
+print(request())
+
+```
+
+Для запросов связанных с изменением данных (CREATE, UPDATE, DELETE и.д.) необходимо выполнить POST запрос на тот же эндпоинт:
+```
+import requests
+
+def request():
+    body = """ ALTER TABLE db_name.table_name DELETE WHERE advertisementId=11; """
+    url = 'https://host.mdb.yandexcloud.net:8443/'
+    auth = {
+        'X-ClickHouse-User': 'user_login',
+        'X-ClickHouse-Key': 'user_password',
+    }
+
+    res = requests.post(
+        url,
+        body,
+        headers=auth,
+        verify='/usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt')
+    res.raise_for_status()
+    return res.text
+
+print(request())
