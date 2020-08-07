@@ -1,6 +1,15 @@
+- [ClickHouse](#clickhouse)
+
+
+
+
+
+
+
+
 # ClickHouse и Python для хранения подневной статистикой кросс-курсов
 
-## ClickHouse
+## <a name="clickhouse">ClickHouse</a>
 
 ### - Создаем кластер ClickHouse
 
