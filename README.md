@@ -1,4 +1,11 @@
+# Содержание
+
 - [ClickHouse](#clickhouse)
+  - [ClickHouse install](#clickhouse_install)
+  - [ClickHouse SQL-syntax](#clickhouse_sql_syntax)
+    - [CREATE TABLE](#create_table)
+    - []()
+
 
 
 
@@ -13,7 +20,7 @@
 
 ### - Создаем кластер ClickHouse
 
-### - Устанавливаем ClickHouse на ВМ
+### <a name="clickhouse_install">- Устанавливаем ClickHouse на ВМ</a>
 
 - Указываем репозиторий, с которого будет загружен ClickHouse
 > ``` $ sudo apt-add-repository "deb http://repo.yandex.ru/clickhouse/deb/stable/ main/" ```
@@ -41,9 +48,9 @@
 Для смены пароля необходио отредактирвоать файл:
 > ``` $ sudo nano /etc/clickhouse-server/users.d/default-password.xml ```
 
-### - SQL синтаксис и команды ClickHouse
+### <a name="clickhouse_sql_syntax">- SQL синтаксис и команды ClickHouse</a>
 
-#### Создание таблиц:
+#### <a name="create_table">Создание таблиц:</a>
 
 - Выбираем <a href="https://clickhouse.tech/docs/ru/engines/table-engines/">движок</a> для будущей таблицы. Для решения данной задачи был выбран MergeTree.
 
