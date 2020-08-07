@@ -51,17 +51,18 @@
 
 #### Запись данных в таблицу:
 
-Пример SQL-запроса для записи данных в таблицу:
+Пример SQL-запроса для записи данных в таблицу: <br>
 ``` INSERT INTO db_name.table_name VALUES (12, 12, 12, 12, 12) ```
 
 #### Выборка данных из таблицы:
 
-Пример SQL-запроса на выборку данных:
+Пример SQL-запроса на выборку данных: <br>
 ``` SELECT * FROM db_name.table_name WHERE advertisementId=12 ```
 
-#### Выборка данных о партициях таблицы:
+#### Выборка данных о партициях таблицы: <br>
 Пример SQL-запроса на информации о партициях:
-``` SELECT partition,
+``` 
+    SELECT partition,
            count() as number_of_parts,
            formatReadableSize(sum(bytes)) as sum_size
     FROM system.parts
@@ -73,12 +74,12 @@
 ```
 #### Обновление данных в таблице:
 
-Пример SQL-запроса на обновление данных:
+Пример SQL-запроса на обновление данных: <br>
 ``` ALTER TABLE db_name.table_name UPDATE advertisementId=77 WHERE locationId=12; ```
 
 #### Удаление данных в таблице:
 
-Пример SQL-запроса на удаление данных:
+Пример SQL-запроса на удаление данных: <br>
 ``` ALTER TABLE db_name.table_name DELETE WHERE locationId=12; ```
 
 
