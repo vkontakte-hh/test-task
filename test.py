@@ -119,7 +119,7 @@ class vk_task:
                                                                "access_key": self.access_key})
             
             response = self.chech_currency_hystory_success(response)
-            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ({date}, {response['USD']}, {response['EUR']}, {response['RUB']})")
+            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ('{date}', {response['USD']}, {response['EUR']}, {response['RUB']})")
             date = datetime.strftime(datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1), "%Y-%m-%d")
             
         return []
