@@ -70,7 +70,7 @@ class ch_task:
         select_skip_days_query = f""" SELECT partition FROM system.parts 
                                       WHERE active 
                                       AND database = '{self.db_name}' 
-                                      AND table = 'course_stat_USD_EUR_RUB'
+                                      AND table = 'symbol_dict_USD_EUR_RUB'
                                       ORDER BY partition;
         """
         skip_days = self.select_query(select_skip_days_query)
