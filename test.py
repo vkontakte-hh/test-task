@@ -111,28 +111,28 @@ class vk_task:
         else:
             pass
         
-    def get_currency_hystory(self, date_from=None, date_to=None):
-        if (date_from is not None) & (date_to is not None):
-            self.date_from = date_from
-            self.date_to = date_to
-        date = self.date_from
-        while (datetime.strftime(datetime.strptime(self.date_to, "%Y-%m-%d") + timedelta(days=1), "%Y-%m-%d") != date) & (date != datetime.strftime(datetime.today(), "%Y-%m-%d")):
+    def get_currency_hystory(self, date_range=None):
+        if date_range is None:
+            date_range = [datetime.strftime(datetime.strptime(self.date_from, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(self.date_to, "%Y-%m-%d") - datetime.strptime(self.date_from, "%Y-%m-%d")).days + 1)]
+        for date in date_range:
             response = requests.get(self.URL + date, params = {"symbols": 'USD,EUR,RUB', 
                                                                "access_key": self.access_key})
             
             response = self.chech_currency_hystory_success(response)
             self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ('{date}', {response['USD']}, {response['EUR']}, {response['RUB']})")
-            date = datetime.strftime(datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1), "%Y-%m-%d")
             
         return []
     
     def get_missing_data(self):
         skip_date_list = self.db_connect.get_partition('course_stat_USD_EUR_RUB')
-        st_date = "2018-01-01"
+        st_date = "2020-07-21"
         en_date = datetime.strftime(datetime.today() - timedelta(days=1), "%Y-%m-%d")
-        date_range = [datetime.strftime(datetime.strptime(st_date, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(en_date, "%Y-%m-%d") - datetime.strptime(st_date, "%Y-%m-%d")).days + 1)]
-        diff_list = list(set(date_range).difference(set(skip_date_list)))
-        return diff_list
+        all_date_range = [datetime.strftime(datetime.strptime(st_date, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(en_date, "%Y-%m-%d") - datetime.strptime(st_date, "%Y-%m-%d")).days + 1)]
+        diff_list = list(set(all_date_range).difference(set(skip_date_list)))
+        
+        self.get_currency_hystory(diff_list)
+        
+        return []
     
 access_key = "c99033bf278986db036c4344d9d40f4a"
 date_from = "2020-07-01"
