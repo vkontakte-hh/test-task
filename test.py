@@ -24,10 +24,7 @@ class ch_task:
                                 params=params,
                                 verify='/usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt')
         response.raise_for_status()
-        response_list = list(response.text.split("\n"))
-        response_list.remove('')
-        response_list = [x.split('\t') for x in response_list]
-        return response_list
+        return response.text
     
     def check_or_create_tables(self):
         create_course_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.course_stat_USD_EUR_RUB 
@@ -77,11 +74,15 @@ class ch_task:
                                       ORDER BY partition;
         """
         part = self.select_query(select_part_query)
+        part_list = part.split('\n')
         return list(set(part))
     
     def get_table_data(self, query):
         response = self.select_query(query)
-        return response
+        response_list = list(response.text.split("\n"))
+        response_list.remove('')
+        response_list = [x.split('\t') for x in response_list]
+        return response_list
 
     
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
