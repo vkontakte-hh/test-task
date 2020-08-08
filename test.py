@@ -112,16 +112,17 @@ class vk_task:
             pass
         
     def get_currency_hystory(self, date_range=None):
-        if date_range is None:
-            date_range = [datetime.strftime(datetime.strptime(self.date_from, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(self.date_to, "%Y-%m-%d") - datetime.strptime(self.date_from, "%Y-%m-%d")).days + 1)]
-        for date in date_range:
-            response = requests.get(self.URL + date, params = {"symbols": 'USD,EUR,RUB', 
-                                                               "access_key": self.access_key})
+        symbols = self.db_connect.get_table_data(f"SELECT Symbol1, Symbol2, Symbol3 FROM {self.db_name}.symbol_dict_USD_EUR_RUB")
+#         if date_range is None:
+#             date_range = [datetime.strftime(datetime.strptime(self.date_from, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(self.date_to, "%Y-%m-%d") - datetime.strptime(self.date_from, "%Y-%m-%d")).days + 1)]
+#         for date in date_range:
+#             response = requests.get(self.URL + date, params = {"symbols": 'USD,EUR,RUB', 
+#                                                                "access_key": self.access_key})
             
-            response = self.chech_currency_hystory_success(response)
-            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ('{date}', {response['USD']}, {response['EUR']}, {response['RUB']})")
+#             response = self.chech_currency_hystory_success(response)
+#             self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ('{date}', {response['USD']}, {response['EUR']}, {response['RUB']})")
             
-        return []
+        return symbols
     
     def get_missing_data(self):
         skip_date_list = self.db_connect.get_partition('course_stat_USD_EUR_RUB')
