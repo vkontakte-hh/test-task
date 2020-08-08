@@ -39,8 +39,9 @@ class ch_task:
                 ORDER BY (Day)
                 SETTINGS index_granularity = 8192 """
         
-        self.correction_query(query)
-        return []
+        res = self.correction_query(query)
+        return res
    
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte", ["USD", "EUR", "RUB"])
-ch.check_or_create_tables()
+res = ch.check_or_create_tables()
+print(res)
