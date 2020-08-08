@@ -59,9 +59,9 @@ class ch_task:
         self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
         
         insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_{symbol_str} 
-                                         VALUES ('{self.symbol[0]}', 
-                                                 '{self.symbol[1]}', 
-                                                 '{self.symbol[2]}')"""
+                                         VALUES ({self.symbol[0]}, 
+                                                 {self.symbol[1]}, 
+                                                 {self.symbol[2]})"""
         
         self.correction_query(insert_data_in_table_dict) # Записываем отслеживаемые валюты в словарь
         
@@ -78,7 +78,7 @@ class ch_task:
         skip_days = self.select_query(select_skip_days_query)
         return skip_days
     
-ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte", ["USD", "EUR", "RUB"])
+ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte", ['USD', 'EUR', 'RUB'])
 ch.check_or_create_tables()
 response = ch.get_skip_days()
 print(type(response), response)
