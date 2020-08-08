@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime, timedelta
 
 class ch_task:
     def __init__(self, clickhouse_login, clickhouse_password, host, db_name):
@@ -93,8 +94,9 @@ class ch_task:
 class vk_task:
     def __init__(self, date_from, date_to, access_key, clickhouse_login, clickhouse_password, host, db_name):
         self.URL = "http://data.fixer.io/api/"
+        self.date_from = date_from
+        self.date_to = date_to
         self.db_name = db_name
-        self.date_range = pd.date_range(start=date_from, end=date_to).to_pydatetime().tolist()
         self.access_key = access_key
         self.db_connect = ch_task(clickhouse_login, clickhouse_password, host, db_name)
     
@@ -111,18 +113,20 @@ class vk_task:
         
     def get_currency_hystory(self):
         total_list = []
-        for date in self.date_range:
-            date = datetime.strftime(date, "%Y-%m-%d")
+        date = self.date_from
+        while self.date_to != date:
             response = requests.get(self.URL + date, params = {"symbols": 'USD,EUR,RUB', 
                                                                "access_key": self.access_key})
+            
             response = self.chech_currency_hystory_success(response)
             self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ({date}, {response['USD']}, {response['EUR']}, {response['RUB']})")
+            date = datetime.strftime(datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1), "%Y-%m-%d")
             
         return total_list
 
     
 access_key = "c99033bf278986db036c4344d9d40f4a"
 date_from = "2020-07-01"
-date_to = "2020-07-30"
+date_to = "2020-07-05"
 vk = vk_task(date_from, date_to, access_key, "user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 data = vk.get_currency_hystory()
