@@ -80,7 +80,7 @@ class ch_task:
     
     def get_table_data(self, query):
         response = self.select_query(query)
-        response_list = list(response.text.split("\n"))
+        response_list = list(response.split("\n"))
         response_list.remove('')
         response_list = [x.split('\t') for x in response_list]
         return response_list
@@ -88,5 +88,5 @@ class ch_task:
     
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 ch.check_or_create_tables()
-response = ch.get_partition('symbol_dict_USD_EUR_RUB')
+response = ch.get_table_data('SELECT * FROM vkontakte.symbol_dict_USD_EUR_RUB')
 print(type(response), response)
