@@ -113,6 +113,8 @@ class vk_task:
         
     def get_currency_hystory(self):
         total_list = []
+        self.date_from = "2020-05-01"
+        self.date_to = "2020-05-03"
         date = self.date_from
         while (self.date_to != date) & (date != datetime.strftime(datetime.today(), "%Y-%m-%d")):
             response = requests.get(self.URL + date, params = {"symbols": 'USD,EUR,RUB', 
