@@ -77,7 +77,7 @@ class ch_task:
                                       ORDER BY partition;
         """
         part = self.select_query(select_part_query)
-        return part
+        return list(set(part))
     
     def get_table_data(self, query):
         response = self.select_query(query)
