@@ -82,6 +82,7 @@ class ch_task:
         response = self.select_query(query)
         response_list = list(response.text.split("\n"))
         response_list.remove('')
+        response_list = [x.split('\t') for x in response_list]
         return response_list
     
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
