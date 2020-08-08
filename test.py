@@ -89,8 +89,40 @@ class ch_task:
         self.correction_query(query)
         return []
 
+
+class vk_task:
+    def __init__(self, date_from, date_to, access_key, clickhouse_login, clickhouse_password, host, db_name):
+        self.URL = "http://data.fixer.io/api/"
+        self.db_name = db_name
+        self.date_range = pd.date_range(start=date_from, end=date_to).to_pydatetime().tolist()
+        self.access_key = access_key
+        self.db_connect = ch_task(clickhouse_login, clickhouse_password, host, db_name)
     
-ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
-ch.check_or_create_tables()
-response = ch.insert_data("INSERT INTO vkontakte.symbol_dict_USD_EUR_RUB VALUES (2, 'MX', 'USD', 'MX')")
-print(type(response), response)
+    def chech_currency_hystory_success(self, response):
+        if response.status_code == 200:
+            response_data = response.json()
+            status = response_data['success']
+            if status:
+                return response_data['rates']
+            else:
+                pass
+        else:
+            pass
+        
+    def get_currency_hystory(self):
+        total_list = []
+        for date in self.date_range:
+            date = datetime.strftime(date, "%Y-%m-%d")
+            response = requests.get(self.URL + date, params = {"symbols": 'USD,EUR,RUB', 
+                                                               "access_key": self.access_key})
+            response = self.chech_currency_hystory_success(response)
+            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ({date}, {response['USD']}, {response['EUR']}, {response['RUB']})")
+            
+        return total_list
+
+    
+access_key = "c99033bf278986db036c4344d9d40f4a"
+date_from = "2020-07-01"
+date_to = "2020-07-30"
+vk = vk_task(date_from, date_to, access_key, "user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
+data = vk.get_currency_hystory()
