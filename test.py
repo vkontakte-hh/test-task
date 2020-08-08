@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime, timedelta
+import pandas as pd
 
 class ch_task:
     def __init__(self, clickhouse_login, clickhouse_password, host, db_name):
@@ -51,6 +52,18 @@ class ch_task:
                                              SETTINGS index_granularity = 8192 """
         
         self.correction_query(create_symbol_dict_table_query) # Создаем таблицу для хранения отслеживаемых курсов валют
+        
+        create_mean_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.mean_USD_EUR_RUB 
+                                                                (Day Date,
+                                                                 USD Float64,
+                                                                 EUR Float64,
+                                                                 RUB Float64)
+                                             ENGINE = MergeTree()
+                                             PARTITION BY Day
+                                             ORDER BY (Day)
+                                             SETTINGS index_granularity = 8192 """
+        
+        self.correction_query(create_mean_table_query) # Создаем таблицу для хранения скользящей средней
         
         delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_USD_EUR_RUB 
                                          DELETE WHERE Symbol1 != '';"""
@@ -122,7 +135,7 @@ class vk_task:
             response = self.chech_currency_hystory_success(response)
             self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ('{date}', {response['USD']}, {response['EUR']}, {response['RUB']})")
             
-        return symbols
+        return []
     
     def get_missing_data(self):
         skip_date_list = self.db_connect.get_partition('course_stat_USD_EUR_RUB')
@@ -134,6 +147,26 @@ class vk_task:
         self.get_currency_hystory(diff_list)
         
         return []
+    
+    def count_roll_mean(self):
+        result_df = pd.DataFrame()
+        data = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.course_stat_USD_EUR_RUB")
+        df = pd.DataFrame(data, columns=["Day", "USD", "EUR", "RUB"])
+        result_df['Day'] = df['Day']
+        column_list = list(df.columns)
+        column_list.remove("Day")
+        for element in column_list:
+            roll = df[element].rolling(window=28)
+            result_df[element] = roll.mean().fillna(0)
+        data_in_mean_table = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.mean_USD_EUR_RUB")
+        data_in_mean_table_df = pd.DataFrame(data_in_mean_table, columns=["Day", "USD", "EUR", "RUB"])
+        
+        difference_to_insert = result_df[~(result_df['Day'].isin(data_in_mean_table_df['Day'])]
+        difference_to_insert_in_list = list(difference_to_insert.T.to_dict().values())
+        for insert_element in difference_to_insert_in_list:
+            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.mean_USD_EUR_RUB VALUES ({insert_element['Day']}, {insert_element['USD']}, {insert_element['EUR']}, {insert_element['RUB']})")
+        return []
+        
     
 access_key = "c99033bf278986db036c4344d9d40f4a"
 date_from = "2019-07-01"
