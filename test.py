@@ -74,7 +74,7 @@ class ch_task:
                                       ORDER BY partition;
         """
         skip_days = self.select_query(select_skip_days_query)
-        return skip_days.text
+        return list(skip_days.text.strip())
     
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 ch.check_or_create_tables()
