@@ -6,8 +6,7 @@ class ch_task:
         self.clickhouse_password = clickhouse_password
         self.clickhouse_host = f'https://{host}.mdb.yandexcloud.net:8443/'
         self.db_name = db_name
-        self.symbol = symbol_list
-        self.symbol.sort()
+        self.symbol = symbol_list.sort()
         self.auth = {'X-ClickHouse-User': clickhouse_login,
                      'X-ClickHouse-Key': clickhouse_password}
         
@@ -43,18 +42,19 @@ class ch_task:
         self.correction_query(create_course_table_query) # Создаем таблицу для хранения подневной статистики
         
         create_symbol_dict_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.symbol_dict_{symbol_str} 
-                                                                (Symbol1 String,
+                                                                (id UInt8,
+                                                                 Symbol1 String,
                                                                  Symbol2 String,
                                                                  Symbol3 String)
                                              ENGINE = MergeTree()
-                                             PARTITION BY Day
-                                             ORDER BY (Day)
+                                             PARTITION BY id
+                                             ORDER BY (id)
                                              SETTINGS index_granularity = 8192 """
         
         self.correction_query(create_symbol_dict_table_query) # Создаем таблицу для хранения отслеживаемых курсов валют
         
         delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_{symbol_str} 
-                                         DELETE WHERE {self.symbol[0]} != '';"""
+                                         DELETE WHERE Symbol1 != '';"""
         
         self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
         
