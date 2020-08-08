@@ -24,7 +24,10 @@ class ch_task:
                                 params=params,
                                 verify='/usr/local/share/ca-certificates/Yandex/YandexInternalRootCA.crt')
         response.raise_for_status()
-        return response
+        response_list = list(response.text.split("\n"))
+        response_list.remove('')
+        response_list = [x.split('\t') for x in response_list]
+        return response_list
     
     def check_or_create_tables(self):
         create_course_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.course_stat_USD_EUR_RUB 
@@ -51,18 +54,18 @@ class ch_task:
         
         self.correction_query(create_symbol_dict_table_query) # Создаем таблицу для хранения отслеживаемых курсов валют
         
-#         delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_USD_EUR_RUB 
-#                                          DELETE WHERE Symbol1 != '';"""
+        delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_USD_EUR_RUB 
+                                         DELETE WHERE Symbol1 != '';"""
         
-#         self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
+        self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
         
-#         insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_USD_EUR_RUB 
-#                                          VALUES (1,
-#                                                  'USD', 
-#                                                  'EUR', 
-#                                                  'RUB')"""
+        insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_USD_EUR_RUB 
+                                         VALUES (1,
+                                                 'USD', 
+                                                 'EUR', 
+                                                 'RUB')"""
         
-#         self.correction_query(insert_data_in_table_dict) # Записываем отслеживаемые валюты в словарь
+        self.correction_query(insert_data_in_table_dict) # Записываем отслеживаемые валюты в словарь
         
         return []
     
@@ -74,16 +77,12 @@ class ch_task:
                                       ORDER BY partition;
         """
         part = self.select_query(select_part_query)
-        part_list = list(part.text.split("\n"))
-        part_list.remove('')
-        return list(set(part_list))
+        return part
     
     def get_table_data(self, query):
         response = self.select_query(query)
-        response_list = list(response.text.split("\n"))
-        response_list.remove('')
-        response_list = [x.split('\t') for x in response_list]
-        return response_list
+        return response
+
     
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 ch.check_or_create_tables()
