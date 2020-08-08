@@ -75,7 +75,7 @@ class ch_task:
         """
         part = self.select_query(select_part_query)
         part_list = part.split('\n')
-        return list(set(part))
+        return list(set(part_list))
     
     def get_table_data(self, query):
         response = self.select_query(query)
