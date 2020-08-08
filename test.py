@@ -58,12 +58,13 @@ class ch_task:
         
         self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
         
-#         insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_{symbol_str} 
-#                                          VALUES ({self.symbol[0]}, 
-#                                                  {self.symbol[1]}, 
-#                                                  {self.symbol[2]})"""
+        insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_{symbol_str} 
+                                         VALUES (1,
+                                                 {self.symbol[0]}, 
+                                                 {self.symbol[1]}, 
+                                                 {self.symbol[2]}) """
         
-#         self.correction_query(insert_data_in_table_dict) # Записываем отслеживаемые валюты в словарь
+        self.correction_query(insert_data_in_table_dict) # Записываем отслеживаемые валюты в словарь
         
         return []
     
