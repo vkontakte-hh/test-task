@@ -125,7 +125,7 @@ class vk_task:
     
     def get_missing_data(self):
         skip_date_list = self.db_connect.get_partition('course_stat_USD_EUR_RUB')
-        st_date = "2020-07-21"
+        st_date = "2020-07-10"
         en_date = datetime.strftime(datetime.today() - timedelta(days=1), "%Y-%m-%d")
         all_date_range = [datetime.strftime(datetime.strptime(st_date, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(en_date, "%Y-%m-%d") - datetime.strptime(st_date, "%Y-%m-%d")).days + 1)]
         diff_list = list(set(all_date_range).difference(set(skip_date_list)))
