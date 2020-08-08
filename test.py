@@ -77,7 +77,7 @@ class ch_task:
         skip_days = self.select_query(select_skip_days_query)
         return skip_days
     
-ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte", ['USD', 'EUR', 'RUB'])
+ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 ch.check_or_create_tables()
 response = ch.get_skip_days()
 print(type(response), response)
