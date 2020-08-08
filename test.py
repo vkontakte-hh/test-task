@@ -76,7 +76,7 @@ class ch_task:
         skip_days = self.select_query(select_skip_days_query)
         skip_days_list = list(skip_days.text.split("\n"))
         skip_days_list.remove('')
-        return skip_days_list
+        return list(set(skip_days_list))
     
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 ch.check_or_create_tables()
