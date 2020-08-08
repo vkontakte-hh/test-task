@@ -139,7 +139,7 @@ class vk_task:
     
     def get_missing_data(self):
         skip_date_list = self.db_connect.get_partition('course_stat_USD_EUR_RUB')
-        st_date = "2020-07-10"
+        st_date = "2018-01-01"
         en_date = datetime.strftime(datetime.today() - timedelta(days=1), "%Y-%m-%d")
         all_date_range = [datetime.strftime(datetime.strptime(st_date, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(en_date, "%Y-%m-%d") - datetime.strptime(st_date, "%Y-%m-%d")).days + 1)]
         diff_list = list(set(all_date_range).difference(set(skip_date_list)))
@@ -149,30 +149,31 @@ class vk_task:
         return []
     
     def count_roll_mean(self):
-        result_df = pd.DataFrame()
-        data = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.course_stat_USD_EUR_RUB")
-        df = pd.DataFrame(data, columns=["Day", "USD", "EUR", "RUB"])
-        result_df['Day'] = df['Day']
-        column_list = list(df.columns)
-        column_list.remove("Day")
-        for element in column_list:
+        result_df = pd.DataFrame() # Создаем пустой DataFrame
+        data = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.course_stat_USD_EUR_RUB") # Загружаем статистику по курсам валют за весь период
+        df = pd.DataFrame(data, columns=["Day", "USD", "EUR", "RUB"]) # СОздаем DataFrame из полученной статистики
+        result_df['Day'] = df['Day'] # Создаем столбец с датами в пустом DataFrame
+        column_list = list(df.columns) # Получаем все столбцы из DataFrame со статистикой
+        column_list.remove("Day") # Удаляем название столбца с датой
+        for element in column_list: # Для каждого оставшегося столбца (со статистикой по каждой валюте) считаем среднее скользящее за 28 дней и добавляем в пустой DataFrame полученный столбец значений
             roll = df[element].rolling(window=28)
             result_df[element] = roll.mean().fillna(0)
-        data_in_mean_table = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.mean_USD_EUR_RUB")
+        data_in_mean_table = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.mean_USD_EUR_RUB") # Получаем имеющиеся данные из DataFrame со статистикой по средней скользящей
         data_in_mean_table_df = pd.DataFrame(data_in_mean_table, columns=["Day", "USD", "EUR", "RUB"])
         
-        difference_to_insert = result_df[~(result_df['Day'].isin(data_in_mean_table_df['Day'])]
-        difference_to_insert_in_list = list(difference_to_insert.T.to_dict().values())
-        for insert_element in difference_to_insert_in_list:
+        difference_to_insert = result_df[~(result_df['Day'].isin(data_in_mean_table_df['Day'])] # Отсекаем данные из DataFrame со всей статистикой те строки, которые уже есть в ClickHouse
+        difference_to_insert_in_list = list(difference_to_insert.T.to_dict().values()) # Преобразуем DataFrame в лист из словарей со значениями
+        for insert_element in difference_to_insert_in_list: # В цикле записываем в ClickHouse строки, которых там нет (по прупущенным дням или по новым)
             self.db_connect.insert_data(f"INSERT INTO {self.db_name}.mean_USD_EUR_RUB VALUES ({insert_element['Day']}, {insert_element['USD']}, {insert_element['EUR']}, {insert_element['RUB']})")
         return []
         
     
 access_key = "c99033bf278986db036c4344d9d40f4a"
-date_from = "2019-07-01"
-date_to = "2019-07-05"
-clickhouse = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
-clickhouse.check_or_create_tables()
-vk = vk_task(date_from, date_to, access_key, "user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
-data = vk.get_currency_hystory()
-print(data)
+date_from = datetime.strftime(datetime.today() - timedelta(days=1), "%Y-%m-%d") # Берем вчерашний день как день старта
+date_to = datetime.strftime(datetime.today() - timedelta(days=1), "%Y-%m-%d") # Берем вчерашний день как день конечную дату
+clickhouse = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte") # Создаем подключение к ClickHouse и экземпляр класса
+clickhouse.check_or_create_tables() # Проверяем созданы ли таблицы, если нет, то они создаются и в таблицу-словарь загружаются прописанные в коде валютные пары для отслеживания
+vk = vk_task(date_from, date_to, access_key, "user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte") # Создаем экземпляр класса для работы с fixer
+vk.get_currency_hystory() # Получаем статистику за вчерашний день и записываем в ClickHouse
+vk.get_missing_data() # Получаем статистику за пропущенные дня (период с "2018-01-01" по вчерашний день) и записываем в ClickHouse
+vk.count_roll_mean() # Рассчитываем среднюю скользящую за весь период по дням для каждой валюты и записываем в ClickHouse те строки, по которым данные отсутвуют
