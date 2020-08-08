@@ -6,7 +6,8 @@ class ch_task:
         self.clickhouse_password = clickhouse_password
         self.clickhouse_host = f'https://{host}.mdb.yandexcloud.net:8443/'
         self.db_name = db_name
-        self.symbol = symbol_list.sort()
+        self.symbol = symbol_list
+        self.symbol.sort()
         self.auth = {'X-ClickHouse-User': clickhouse_login,
                      'X-ClickHouse-Key': clickhouse_password}
         
