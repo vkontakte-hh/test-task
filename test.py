@@ -84,9 +84,13 @@ class ch_task:
         response_list.remove('')
         response_list = [x.split('\t') for x in response_list]
         return response_list
+    
+    def insert_data(self, query):
+        self.correction_query(query)
+        return []
 
     
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 ch.check_or_create_tables()
-response = ch.get_table_data('SELECT * FROM vkontakte.symbol_dict_USD_EUR_RUB')
+response = ch.insert_data("INSERT INTO vkontakte.symbol_dict_USD_EUR_RUB VALUES (2, 'MX', 'USD', 'MX')")
 print(type(response), response)
