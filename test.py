@@ -51,18 +51,18 @@ class ch_task:
         
         self.correction_query(create_symbol_dict_table_query) # Создаем таблицу для хранения отслеживаемых курсов валют
         
-        delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_USD_EUR_RUB 
-                                         DELETE WHERE Symbol1 != '';"""
+#         delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_USD_EUR_RUB 
+#                                          DELETE WHERE Symbol1 != '';"""
         
-        self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
+#         self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
         
-        insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_USD_EUR_RUB 
-                                         VALUES (1,
-                                                 'USD', 
-                                                 'EUR', 
-                                                 'RUB')"""
+#         insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_USD_EUR_RUB 
+#                                          VALUES (1,
+#                                                  'USD', 
+#                                                  'EUR', 
+#                                                  'RUB')"""
         
-        self.correction_query(insert_data_in_table_dict) # Записываем отслеживаемые валюты в словарь
+#         self.correction_query(insert_data_in_table_dict) # Записываем отслеживаемые валюты в словарь
         
         return []
     
