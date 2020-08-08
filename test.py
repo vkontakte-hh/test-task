@@ -69,7 +69,7 @@ class ch_task:
     def get_skip_days(self):
         select_skip_days_query = f""" SELECT partition FROM system.parts 
                                       WHERE active 
-                                      AND database = 'vkontakte' 
+                                      AND database = '{self.db_name}' 
                                       AND table = 'course_stat_USD_EUR_RUB'
                                       ORDER BY partition;
         """
