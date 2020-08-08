@@ -42,6 +42,6 @@ class ch_task:
         res = self.correction_query(query)
         return res
    
-ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte", ["USD", "EUR", "RUB"])
+ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte", ["USD", "EUR", "MX"])
 res = ch.check_or_create_tables()
 print(res)
