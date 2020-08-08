@@ -1,12 +1,11 @@
 import requests
 
 class ch_task:
-    def __init__(self, clickhouse_login, clickhouse_password, host, db_name, symbol_list):
+    def __init__(self, clickhouse_login, clickhouse_password, host, db_name):
         self.clickhouse_login = clickhouse_login
         self.clickhouse_password = clickhouse_password
         self.clickhouse_host = f'https://{host}.mdb.yandexcloud.net:8443/'
         self.db_name = db_name
-        self.symbol = symbol_list
         self.auth = {'X-ClickHouse-User': clickhouse_login,
                      'X-ClickHouse-Key': clickhouse_password}
         
@@ -28,15 +27,11 @@ class ch_task:
         return response
     
     def check_or_create_tables(self):
-        symbol_str = '_'.join(self.symbol)
-        symbol0 = self.symbol[0]
-        symbol1 = self.symbol[1]
-        symbol2 = self.symbol[2]
-        create_course_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.course_stat_{symbol_str} 
+        create_course_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.course_stat_USD_EUR_RUB 
                                                                 (Day Date, 
-                                                                {self.symbol[0]} Float64,
-                                                                {self.symbol[1]} Float64,
-                                                                {self.symbol[2]} Float64)
+                                                                USD Float64,
+                                                                EUR Float64,
+                                                                RUB Float64)
                                         ENGINE = MergeTree()
                                         PARTITION BY Day
                                         ORDER BY (Day)
@@ -44,7 +39,7 @@ class ch_task:
         
         self.correction_query(create_course_table_query) # Создаем таблицу для хранения подневной статистики
         
-        create_symbol_dict_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.symbol_dict_{symbol_str} 
+        create_symbol_dict_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.symbol_dict_USD_EUR_RUB 
                                                                 (id UInt8,
                                                                  Symbol1 String,
                                                                  Symbol2 String,
@@ -56,16 +51,16 @@ class ch_task:
         
         self.correction_query(create_symbol_dict_table_query) # Создаем таблицу для хранения отслеживаемых курсов валют
         
-        delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_{symbol_str} 
+        delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_USD_EUR_RUB 
                                          DELETE WHERE Symbol1 != '';"""
         
         self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
         
-        insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_{symbol_str} 
+        insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_USD_EUR_RUB 
                                          VALUES (1,
-                                                 {symbol0}, 
-                                                 {symbol1}, 
-                                                 {symbol2})"""
+                                                 'USD', 
+                                                 'EUR', 
+                                                 'RUB')"""
         
         self.correction_query(insert_data_in_table_dict) # Записываем отслеживаемые валюты в словарь
         
