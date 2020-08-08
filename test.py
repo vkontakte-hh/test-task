@@ -62,7 +62,8 @@ class ch_task:
         self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
         
         insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_{symbol_str} 
-                                         VALUES ({symbol0}, 
+                                         VALUES (1,
+                                                 {symbol0}, 
                                                  {symbol1}, 
                                                  {symbol2})"""
         
