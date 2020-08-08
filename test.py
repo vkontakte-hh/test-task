@@ -53,10 +53,10 @@ class ch_task:
         
         self.correction_query(create_symbol_dict_table_query) # Создаем таблицу для хранения отслеживаемых курсов валют
         
-        delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_{symbol_str} 
-                                         DELETE WHERE Symbol1 != '';"""
+#         delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_{symbol_str} 
+#                                          DELETE WHERE Symbol1 != '';"""
         
-        self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
+#         self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
         
         insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_{symbol_str} 
                                          VALUES ({self.symbol[0]}, 
