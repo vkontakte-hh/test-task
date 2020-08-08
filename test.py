@@ -67,18 +67,24 @@ class ch_task:
         return []
     
     def get_partition(self, tb_name):
-        select_skip_days_query = f""" SELECT partition FROM system.parts 
+        select_part_query = f""" SELECT partition FROM system.parts 
                                       WHERE active 
                                       AND database = '{self.db_name}' 
                                       AND table = '{tb_name}'
                                       ORDER BY partition;
         """
-        part = self.select_query(select_skip_days_query)
+        part = self.select_query(select_part_query)
         part_list = list(part.text.split("\n"))
         part_list.remove('')
         return list(set(part_list))
     
+    def get_table_data(self, query):
+        response = self.select_query(query)
+        response_list = list(response.text.split("\n"))
+        response_list.remove('')
+        return response_list
+    
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 ch.check_or_create_tables()
-response = ch.get_partition('symbol_dict_USD_EUR_RUB')
+response = ch.get_table_data('SELECT * FROM vkontakte.symbol_dict_USD_EUR_RUB')
 print(type(response), response)
