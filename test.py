@@ -74,7 +74,7 @@ class ch_task:
                                       ORDER BY partition;
         """
         part = self.select_query(select_skip_days_query)
-        part_list = list(skip_days.text.split("\n"))
+        part_list = list(part.text.split("\n"))
         part_list.remove('')
         return list(set(part_list))
     
