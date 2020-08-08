@@ -125,10 +125,17 @@ class vk_task:
             date = datetime.strftime(datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1), "%Y-%m-%d")
             
         return []
-
+    
+    def get_missing_data(self):
+        skip_date_list = self.db_connect.get_partition('course_stat_USD_EUR_RUB')
+        st_date = "2018-01-01"
+        en_date = datetime.strftime(datetime.today() - timedelta(days=1), "%Y-%m-%d")
+        date_range = [datetime.strftime(datetime.strptime(st_date, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(en_date, "%Y-%m-%d") - datetime.strptime(st_date, "%Y-%m-%d")).days + 1)]
+        diff_list = list(set(date_range).difference(set(skip_date_list)))
+        return diff_list
     
 access_key = "c99033bf278986db036c4344d9d40f4a"
 date_from = "2020-07-01"
 date_to = "2020-07-05"
 vk = vk_task(date_from, date_to, access_key, "user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
-data = vk.get_currency_hystory()
+data = vk.get_missing_data()
