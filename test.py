@@ -67,11 +67,10 @@ class ch_task:
         return []
     
     def get_skip_days(self):
-        symbol_str = '_'.join(self.symbol)
         select_skip_days_query = f""" SELECT partition FROM system.parts 
                                       WHERE active 
                                       AND database = {self.db_name} 
-                                      AND table = course_stat_{symbol_str} 
+                                      AND table = course_stat_USD_EUR_RUB 
                                       ORDER BY partition;
         """
         skip_days = self.select_query(select_skip_days_query)
