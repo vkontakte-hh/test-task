@@ -122,7 +122,7 @@ class vk_task:
             self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ({date}, {response['USD']}, {response['EUR']}, {response['RUB']})")
             date = datetime.strftime(datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1), "%Y-%m-%d")
             
-        return total_list
+        return []
 
     
 access_key = "c99033bf278986db036c4344d9d40f4a"
