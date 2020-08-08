@@ -86,5 +86,5 @@ class ch_task:
     
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 ch.check_or_create_tables()
-response = ch.get_table_data('SELECT * FROM vkontakte.symbol_dict_USD_EUR_RUB')
+response = ch.get_partition('symbol_dict_USD_EUR_RUB')
 print(type(response), response)
