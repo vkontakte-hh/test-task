@@ -75,6 +75,7 @@ class ch_task:
         """
         part = self.select_query(select_part_query)
         part_list = part.split('\n')
+        part_list.remove('')
         return list(set(part_list))
     
     def get_table_data(self, query):
