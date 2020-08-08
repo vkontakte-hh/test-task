@@ -113,14 +113,14 @@ class vk_task:
         
     def get_currency_hystory(self, date_range=None):
         symbols = self.db_connect.get_table_data(f"SELECT Symbol1, Symbol2, Symbol3 FROM {self.db_name}.symbol_dict_USD_EUR_RUB")
-#         if date_range is None:
-#             date_range = [datetime.strftime(datetime.strptime(self.date_from, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(self.date_to, "%Y-%m-%d") - datetime.strptime(self.date_from, "%Y-%m-%d")).days + 1)]
-#         for date in date_range:
-#             response = requests.get(self.URL + date, params = {"symbols": 'USD,EUR,RUB', 
-#                                                                "access_key": self.access_key})
+        if date_range is None:
+            date_range = [datetime.strftime(datetime.strptime(self.date_from, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(self.date_to, "%Y-%m-%d") - datetime.strptime(self.date_from, "%Y-%m-%d")).days + 1)]
+        for date in date_range:
+            response = requests.get(self.URL + date, params = {"symbols": ','.join(symbols[0]), 
+                                                               "access_key": self.access_key})
             
-#             response = self.chech_currency_hystory_success(response)
-#             self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ('{date}', {response['USD']}, {response['EUR']}, {response['RUB']})")
+            response = self.chech_currency_hystory_success(response)
+            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ('{date}', {response['USD']}, {response['EUR']}, {response['RUB']})")
             
         return symbols
     
@@ -136,8 +136,8 @@ class vk_task:
         return []
     
 access_key = "c99033bf278986db036c4344d9d40f4a"
-date_from = "2020-07-01"
-date_to = "2020-07-05"
+date_from = "2019-07-01"
+date_to = "2019-07-05"
 clickhouse = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 clickhouse.check_or_create_tables()
 vk = vk_task(date_from, date_to, access_key, "user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
