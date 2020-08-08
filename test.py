@@ -139,3 +139,4 @@ date_from = "2020-07-01"
 date_to = "2020-07-05"
 vk = vk_task(date_from, date_to, access_key, "user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 data = vk.get_missing_data()
+print(data)
