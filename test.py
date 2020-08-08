@@ -111,12 +111,12 @@ class vk_task:
         else:
             pass
         
-    def get_currency_hystory(self):
-        total_list = []
-        self.date_from = "2020-05-01"
-        self.date_to = "2020-05-03"
+    def get_currency_hystory(self, date_from=None, date_to=None):
+        if (date_from is not None) & (date_to is not None):
+            self.date_from = date_from
+            self.date_to = date_to
         date = self.date_from
-        while (self.date_to != date) & (date != datetime.strftime(datetime.today(), "%Y-%m-%d")):
+        while (datetime.strftime(datetime.strptime(self.date_to, "%Y-%m-%d") + timedelta(days=1), "%Y-%m-%d") != date) & (date != datetime.strftime(datetime.today(), "%Y-%m-%d")):
             response = requests.get(self.URL + date, params = {"symbols": 'USD,EUR,RUB', 
                                                                "access_key": self.access_key})
             
