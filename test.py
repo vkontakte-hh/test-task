@@ -66,19 +66,19 @@ class ch_task:
         
         return []
     
-    def get_skip_days(self):
+    def get_partition(self, tb_name):
         select_skip_days_query = f""" SELECT partition FROM system.parts 
                                       WHERE active 
                                       AND database = '{self.db_name}' 
-                                      AND table = 'symbol_dict_USD_EUR_RUB'
+                                      AND table = '{tb_name}'
                                       ORDER BY partition;
         """
-        skip_days = self.select_query(select_skip_days_query)
-        skip_days_list = list(skip_days.text.split("\n"))
-        skip_days_list.remove('')
-        return list(set(skip_days_list))
+        part = self.select_query(select_skip_days_query)
+        part_list = list(skip_days.text.split("\n"))
+        part_list.remove('')
+        return list(set(part_list))
     
 ch = ch_task("user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte")
 ch.check_or_create_tables()
-response = ch.get_skip_days()
+response = ch.get_partition()
 print(type(response), response)
