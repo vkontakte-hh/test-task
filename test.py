@@ -169,7 +169,7 @@ class vk_task:
         # Получаем имеющиеся данные из DataFrame со статистикой по средней скользящей
         data_in_mean_table_df = pd.DataFrame(data_in_mean_table, columns=["Day", "USD", "EUR", "RUB"])
         
-        difference_to_insert = result_df[~(result_df['Day'].isin(data_in_mean_table_df['Day'])] 
+        difference_to_insert = result_df[~(result_df['Day'].isin(data_in_mean_table_df['Day']))] 
         # Отсекаем данные из DataFrame со всей статистикой те строки, которые уже есть в ClickHouse
         difference_to_insert_in_list = list(difference_to_insert.T.to_dict().values()) 
         # Преобразуем DataFrame в лист из словарей со значениями
