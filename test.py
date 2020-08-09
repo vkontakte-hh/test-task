@@ -175,7 +175,11 @@ class vk_task:
         # Преобразуем DataFrame в лист из словарей со значениями
         for insert_element in difference_to_insert_in_list: 
             # В цикле записываем в ClickHouse строки, которых там нет (по прупущенным дням или по новым)
-            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.mean_USD_EUR_RUB VALUES ({insert_element['Day']}, {insert_element['USD']}, {insert_element['EUR']}, {insert_element['RUB']})")
+            date = insert_element['Day']
+            USD = insert_element['USD']
+            EUR = insert_element['EUR']
+            RUB = insert_element['RUB']
+            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.mean_USD_EUR_RUB VALUES ('{date}', {USD}, {EUR}, {RUB})")
         return []
         
     
