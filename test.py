@@ -29,10 +29,10 @@ class ch_task:
         return response.text
     
     def check_or_create_tables(self):
-        create_course_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.course_stat_USD_EUR_RUB 
+        create_course_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.course_stat_USD_GBP_RUB 
                                                                 (Day Date, 
                                                                 USD Float64,
-                                                                EUR Float64,
+                                                                GBP Float64,
                                                                 RUB Float64)
                                         ENGINE = MergeTree()
                                         PARTITION BY Day
@@ -41,7 +41,7 @@ class ch_task:
         
         self.correction_query(create_course_table_query) # Создаем таблицу для хранения подневной статистики
         
-        create_symbol_dict_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.symbol_dict_USD_EUR_RUB 
+        create_symbol_dict_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.symbol_dict_USD_GBP_RUB 
                                                                 (id UInt8,
                                                                  Symbol1 String,
                                                                  Symbol2 String,
@@ -53,10 +53,10 @@ class ch_task:
         
         self.correction_query(create_symbol_dict_table_query) # Создаем таблицу для хранения отслеживаемых курсов валют
         
-        create_mean_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.mean_USD_EUR_RUB 
+        create_mean_table_query = f"""CREATE TABLE IF NOT EXISTS {self.db_name}.mean_USD_GBP_RUB 
                                                                 (Day Date,
                                                                  USD Float64,
-                                                                 EUR Float64,
+                                                                 GBP Float64,
                                                                  RUB Float64)
                                              ENGINE = MergeTree()
                                              PARTITION BY Day
@@ -65,15 +65,15 @@ class ch_task:
         
         self.correction_query(create_mean_table_query) # Создаем таблицу для хранения скользящей средней
         
-        delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_USD_EUR_RUB 
+        delete_data_in_table_dict = f""" ALTER TABLE {self.db_name}.symbol_dict_USD_GBP_RUB 
                                          DELETE WHERE Symbol1 != '';"""
         
         self.correction_query(delete_data_in_table_dict) # Очищаем таблицу словаря
         
-        insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_USD_EUR_RUB 
+        insert_data_in_table_dict = f""" INSERT INTO {self.db_name}.symbol_dict_USD_GBP_RUB 
                                          VALUES (1,
                                                  'USD', 
-                                                 'EUR', 
+                                                 'GBP', 
                                                  'RUB')"""
         
         self.correction_query(insert_data_in_table_dict) # Записываем отслеживаемые валюты в словарь
@@ -125,7 +125,7 @@ class vk_task:
             pass
         
     def get_currency_hystory(self, date_range=None):
-        symbols = self.db_connect.get_table_data(f"SELECT Symbol1, Symbol2, Symbol3 FROM {self.db_name}.symbol_dict_USD_EUR_RUB")
+        symbols = self.db_connect.get_table_data(f"SELECT Symbol1, Symbol2, Symbol3 FROM {self.db_name}.symbol_dict_USD_GBP_RUB")
         if date_range is None:
             date_range = [datetime.strftime(datetime.strptime(self.date_from, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(self.date_to, "%Y-%m-%d") - datetime.strptime(self.date_from, "%Y-%m-%d")).days + 1)]
         for date in date_range:
@@ -133,12 +133,12 @@ class vk_task:
                                                                "access_key": self.access_key})
             
             response = self.chech_currency_hystory_success(response)
-            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_EUR_RUB VALUES ('{date}', {response['USD']}, {response['EUR']}, {response['RUB']})")
+            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.course_stat_USD_GBP_RUB VALUES ('{date}', {response['USD']}, {response['GBP']}, {response['RUB']})")
             
         return []
     
     def get_missing_data(self):
-        skip_date_list = self.db_connect.get_partition('course_stat_USD_EUR_RUB')
+        skip_date_list = self.db_connect.get_partition('course_stat_USD_GBP_RUB')
         st_date = "2018-01-01"
         en_date = datetime.strftime(datetime.today() - timedelta(days=1), "%Y-%m-%d")
         all_date_range = [datetime.strftime(datetime.strptime(st_date, "%Y-%m-%d") + timedelta(days=x), "%Y-%m-%d") for x in range(0, (datetime.strptime(en_date, "%Y-%m-%d") - datetime.strptime(st_date, "%Y-%m-%d")).days + 1)]
@@ -151,9 +151,9 @@ class vk_task:
     def count_roll_mean(self):
         result_df = pd.DataFrame() 
         # Создаем пустой DataFrame
-        data = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.course_stat_USD_EUR_RUB") 
+        data = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.course_stat_USD_GBP_RUB") 
         # Загружаем статистику по курсам валют за весь период
-        df = pd.DataFrame(data, columns=["Day", "USD", "EUR", "RUB"]) 
+        df = pd.DataFrame(data, columns=["Day", "USD", "GBP", "RUB"]) 
         # СОздаем DataFrame из полученной статистики
         result_df['Day'] = df['Day'] 
         # Создаем столбец с датами в пустом DataFrame
@@ -165,9 +165,9 @@ class vk_task:
             # Для каждого оставшегося столбца (со статистикой по каждой валюте) считаем среднее скользящее за 28 дней и добавляем в пустой DataFrame полученный столбец значений
             roll = df[element].rolling(window=28)
             result_df[element] = roll.mean().fillna(0)
-        data_in_mean_table = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.mean_USD_EUR_RUB") 
+        data_in_mean_table = self.db_connect.get_table_data(f"SELECT * FROM {self.db_name}.mean_USD_GBP_RUB") 
         # Получаем имеющиеся данные из DataFrame со статистикой по средней скользящей
-        data_in_mean_table_df = pd.DataFrame(data_in_mean_table, columns=["Day", "USD", "EUR", "RUB"])
+        data_in_mean_table_df = pd.DataFrame(data_in_mean_table, columns=["Day", "USD", "GBP", "RUB"])
         
         difference_to_insert = result_df[~(result_df['Day'].isin(data_in_mean_table_df['Day']))] 
         # Отсекаем данные из DataFrame со всей статистикой те строки, которые уже есть в ClickHouse
@@ -177,9 +177,9 @@ class vk_task:
             # В цикле записываем в ClickHouse строки, которых там нет (по прупущенным дням или по новым)
             date = insert_element['Day']
             USD = insert_element['USD']
-            EUR = insert_element['EUR']
+            GBP = insert_element['GBP']
             RUB = insert_element['RUB']
-            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.mean_USD_EUR_RUB VALUES ('{date}', {USD}, {EUR}, {RUB})")
+            self.db_connect.insert_data(f"INSERT INTO {self.db_name}.mean_USD_GBP_RUB VALUES ('{date}', {USD}, {GBP}, {RUB})")
         return []
         
     
