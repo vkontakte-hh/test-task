@@ -194,9 +194,9 @@ clickhouse.check_or_create_tables()
 # Проверяем созданы ли таблицы, если нет, то они создаются и в таблицу-словарь загружаются прописанные в коде валютные пары для отслеживания
 vk = vk_task(date_from, date_to, access_key, "user-vk", "Qqwerty123", "rc1b-2kg8g5lblno2pln0", "vkontakte") 
 # Создаем экземпляр класса для работы с fixer
-vk.get_currency_hystory() 
+# vk.get_currency_hystory() 
 # Получаем статистику за вчерашний день и записываем в ClickHouse
-vk.get_missing_data() 
+# vk.get_missing_data() 
 # Получаем статистику за пропущенные дня (период с "2018-01-01" по вчерашний день) и записываем в ClickHouse
 vk.count_roll_mean() 
 # Рассчитываем среднюю скользящую за весь период по дням для каждой валюты и записываем в ClickHouse те строки, по которым данные отсутвуют
